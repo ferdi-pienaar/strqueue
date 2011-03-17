@@ -94,22 +94,23 @@ TEST(writeFull, strqueue)
     CHECK(nIn == 8);
 }
 
-#if 0
+
 // Write and read for a few cycles
 TEST(chase, strqueue)
 {
-    queue<int, 8> q;
+    static const unsigned qSize = 8;
+    queue<int, qSize> q;
     unsigned n;
 
-    for (n = 0; n < Q_SIZE * 3; n++)
+    for (n = 0; n < qSize * 3; n++)
     {
-        queue::t_element in = n;
+        int in = n;
         q.enq(in);
 
-        queue::t_element out;
+        int out;
         q.deq(out);
 
         CHECK(out == in);
     }
 }
-#endif
+
