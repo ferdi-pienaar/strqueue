@@ -1,6 +1,8 @@
 #ifndef STR_QUEUE_H
 #define STR_QUEUE_H
 
+
+#if 1
 #ifndef Q_SIZE // Allows you to define it in Makefile or on command line
 #define Q_SIZE 8
 #endif
@@ -10,6 +12,7 @@
 #endif
 
 #define MASK ((Q_SIZE) - 1)
+#endif
 
 
 // An advantage of the streams model is it means we don't have to waste
@@ -17,14 +20,41 @@
 // If Q_SIZE is a power of two, and known at compile-time, the compiler
 // should be able to make efficient implementations of the modulus operation
 // used in enq() and deq().
+template <class T>
 class queue
 {
 public:
-    typedef unsigned t_element;
 
     queue() : readCnt(0), writeCnt(0) {}
-    bool enq(const t_element & e);
-    bool deq(t_element & e);
+
+
+
+    bool enq(const T & entry)
+{
+    if (full())
+    {
+        return false;
+    }
+
+    buf[writeCnt % Q_SIZE] = entry;
+    writeCnt++;
+    return true;
+}
+
+    // Remove an element from head of queue, copying it to input param
+bool deq(T & entry)
+{
+    if (empty())
+    {
+        return false;
+    }
+
+    entry = buf[readCnt % Q_SIZE];
+    readCnt++;
+    return true;
+}
+
+
 
 private:
 
@@ -40,7 +70,7 @@ private:
         return (readCnt == writeCnt);
     }
 
-    t_element buf[Q_SIZE];
+    T buf[Q_SIZE];
 
     unsigned readCnt;  // Number of reads
     unsigned writeCnt; // Number of writes

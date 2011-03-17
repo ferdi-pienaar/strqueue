@@ -5,35 +5,41 @@
  * a template parameter should allow us the efficiencies of power-of-two sizes, without
  * restricting us to choosing a given power of two when writing the code.
  *
+ * Note that we assume the increment operations on writeCnt and readCnt are atomic.
+ * Choose them accordingly, e.g. in n-bit processors, they should not be larger than n bits.
+ *
  */
 
 #include "strqueue.h"
 
-
+#if 0
 // Add an element to the tail of the queue
-bool queue::enq(const t_element & e)
+template <class T>
+bool queue<T>::enq(const T & entry)
 {
     if (full())
     {
         return false;
     }
 
-    buf[writeCnt % Q_SIZE] = e;
+    buf[writeCnt % Q_SIZE] = entry;
     writeCnt++;
     return true;
 }
 
 
 // Remove an element from head of queue, copying it to input param
-bool queue::deq(t_element & e)
+template <class T>
+bool queue<T>::deq(T & entry)
 {
     if (empty())
     {
         return false;
     }
 
-    e = buf[readCnt % Q_SIZE];
+    entry = buf[readCnt % Q_SIZE];
     readCnt++;
     return true;
 }
+#endif
 
