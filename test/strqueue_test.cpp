@@ -27,7 +27,6 @@ TEST(write1, strqueue)
     CHECK(out == 43);
 }
 
-
 // Write 2 entries, then read them
 TEST(write2, strqueue)
 {
@@ -92,6 +91,7 @@ TEST(writeFull, strqueue)
     }
 
     CHECK(nOut == nIn);
+    CHECK(nIn == Q_SIZE);
 }
 
 

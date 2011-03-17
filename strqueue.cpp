@@ -18,8 +18,8 @@ bool queue::enq(const t_element & e)
         return false;
     }
 
-    buf[tail] = e;
-    tail = nextIndex(tail);
+    buf[writeCnt % Q_SIZE] = e;
+    writeCnt++;
     return true;
 }
 
@@ -32,8 +32,8 @@ bool queue::deq(t_element & e)
         return false;
     }
 
-    e = buf[head];
-    head = nextIndex(head);
+    e = buf[readCnt % Q_SIZE];
+    readCnt++;
     return true;
 }
 

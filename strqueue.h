@@ -12,35 +12,38 @@
 #define MASK ((Q_SIZE) - 1)
 
 
+// An advantage of the streams model is it means we don't have to waste
+// one buffer entry to distinguish between "full" and "empty".
+// If Q_SIZE is a power of two, and known at compile-time, the compiler
+// should be able to make efficient implementations of the modulus operation
+// used in enq() and deq().
 class queue
 {
 public:
     typedef unsigned t_element;
 
-    queue() : head(0), tail(0) {}
+    queue() : readCnt(0), writeCnt(0) {}
     bool enq(const t_element & e);
     bool deq(t_element & e);
 
 private:
-    unsigned int nextIndex(unsigned int idx)
-    {
-        return (idx + 1) & MASK;
-    }
 
     bool full()
     {
-        return (head == nextIndex(tail));
+        // Because the counters are unsigned, this is correct even
+        // if the counters wrap.
+        return (writeCnt == readCnt + Q_SIZE);
     }
 
     bool empty()
     {
-        return (head == tail);
+        return (readCnt == writeCnt);
     }
 
     t_element buf[Q_SIZE];
 
-    unsigned head; // index
-    unsigned tail; // index
+    unsigned readCnt;  // Number of reads
+    unsigned writeCnt; // Number of writes
 };
 
 
