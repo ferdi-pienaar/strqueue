@@ -2,7 +2,7 @@
 #define STR_QUEUE_H
 
 
-#if 1
+#if 0
 #ifndef Q_SIZE // Allows you to define it in Makefile or on command line
 #define Q_SIZE 8
 #endif
@@ -20,7 +20,7 @@
 // If Q_SIZE is a power of two, and known at compile-time, the compiler
 // should be able to make efficient implementations of the modulus operation
 // used in enq() and deq().
-template <class T>
+template <class T, unsigned size = 8>
 class queue
 {
 public:
@@ -36,7 +36,7 @@ public:
         return false;
     }
 
-    buf[writeCnt % Q_SIZE] = entry;
+    buf[writeCnt % size] = entry;
     writeCnt++;
     return true;
 }
@@ -49,7 +49,7 @@ bool deq(T & entry)
         return false;
     }
 
-    entry = buf[readCnt % Q_SIZE];
+    entry = buf[readCnt % size];
     readCnt++;
     return true;
 }
@@ -62,7 +62,7 @@ private:
     {
         // Because the counters are unsigned, this is correct even
         // if the counters wrap.
-        return (writeCnt == readCnt + Q_SIZE);
+        return (writeCnt == readCnt + size);
     }
 
     bool empty()
@@ -70,7 +70,7 @@ private:
         return (readCnt == writeCnt);
     }
 
-    T buf[Q_SIZE];
+    T buf[size];
 
     unsigned readCnt;  // Number of reads
     unsigned writeCnt; // Number of writes
