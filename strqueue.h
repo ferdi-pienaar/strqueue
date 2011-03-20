@@ -6,17 +6,22 @@
  * restricting us to choosing a given power of two when writing the code.
  *
  * Note that we assume the increment operations on writeCnt and readCnt are atomic.
- * Choose them accordingly, e.g. in n-bit processors, they should not be larger than n bits.
+ * Choose their type accordingly, i.e. in n-bit processors, they should not be larger than n bits.
+ *
+ * xxx how do we fail if size is not a power of 2?
  *
  */
 
 #ifndef STR_QUEUE_H
 #define STR_QUEUE_H
+#include <stdint.h>  // uint8_t, etc
+
+#define CNTR_TYPE uint8_t
 
 
-// An advantage of the streams model is it means we don't have to waste
+// An advantage of the streams model is that it doesn't waste
 // one buffer entry to distinguish between "full" and "empty".
-// If Q_SIZE is a power of two, and known at compile-time, the compiler
+// If size is a power of two, and known at compile-time, the compiler
 // should be able to make efficient implementations of the modulus operation
 // used in enq() and deq().
 template <class T, unsigned size = 8>
@@ -33,7 +38,7 @@ private:
     {
         // Because the counters are unsigned, this is correct even
         // if the counters wrap.
-        return (writeCnt == readCnt + size);
+        return (writeCnt == (CNTR_TYPE)(readCnt + (CNTR_TYPE)size));
     }
 
     bool empty()
@@ -43,8 +48,8 @@ private:
 
     T buf[size];
 
-    unsigned readCnt;  // Number of reads
-    unsigned writeCnt; // Number of writes
+    CNTR_TYPE readCnt;  // Number of reads
+    CNTR_TYPE writeCnt; // Number of writes
 };
 
 
@@ -56,7 +61,7 @@ bool queue<T, size>::enq(const T & entry)
     {
         return false;
     }
-
+    
     buf[writeCnt % size] = entry;
     writeCnt++;
     return true;
