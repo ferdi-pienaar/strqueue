@@ -3,7 +3,7 @@
  * Use stream queue concept http://fgiesen.wordpress.com/2010/12/14/ring-buffers-and-queues/
  * Use C++ templates for the elem type and also the queue size.  Having queue size as
  * a template parameter should allow us the efficiencies of power-of-two sizes, without
- * restricting us to choosing a given power of two when writing the code.
+ * restricting us to choosing a given power of two when implementing the queue.
  *
  * Note that we assume the increment operations on writeCnt and readCnt are atomic.
  * Choose their type accordingly, i.e. in n-bit processors, they should not be larger than n bits.

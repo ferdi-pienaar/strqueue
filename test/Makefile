@@ -3,11 +3,13 @@ VPATH = ../../CppUnitLite
 
 OBJS = strqueue_test.o
 
-all: strqueue_test
-
+# Execute test, only if executable is new -- the empty tag file timestamps the last time the test ran
+testTag: strqueue_test
+	./strqueue_test
+	touch testTag
+	
 strqueue_test: $(OBJS) -lCppUnitLite
 	$(CXX) $(CXXFLAGS) $^ -o $@
-	./strqueue_test
 
 strqueue_test.o: strqueue_test.cpp ../strqueue.h
 
