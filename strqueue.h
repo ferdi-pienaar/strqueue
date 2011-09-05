@@ -4,19 +4,26 @@
  * Use C++ templates for the elem type and also the queue size.  Having queue size as
  * a template parameter should allow us the efficiencies of power-of-two sizes, without
  * restricting us to choosing a given power of two when implementing the queue.
+ * The efficient implementation for power-of-two sizes is done by most compilers
+ * (at least by gcc).  This file has an implicit dependency on the queue size being a power
+ * of two, but unfortunately does not enforce that.
  *
  * Note that we assume the increment operations on writeCnt and readCnt are atomic.
- * Choose their type accordingly, i.e. in n-bit processors, they should not be larger than n bits.
+ * Choose counter_t accordingly, i.e. in n-bit processors, counter_t should not be larger than n bits.
  *
- * xxx how do we fail if size is not a power of 2?
+ * Threading:
+ *  Application can safely enqueue in one task and dequeue in another.
+ *  Application should ensure that enq is not call concurrently;
+ *  neither should deq.
+ *
+ * xxx Could we produce a compile-time warning or failure if size is not a power of two
+ * (which causes this implementation to be defective)?
  *
  */
 
 #ifndef STR_QUEUE_H
 #define STR_QUEUE_H
 #include <stdint.h>  // uint8_t, etc
-
-#define CNTR_TYPE uint8_t
 
 
 // An advantage of the streams model is that it doesn't waste
@@ -28,6 +35,10 @@ template <class T, unsigned size = 8>
 class queue
 {
 public:
+    // The type must be big enough to count up to the maximum number of elements in the queue,
+    // given by the size parameter of this template class.
+    typedef uint8_t counter_t;
+
     queue() : readCnt(0), writeCnt(0) {}
     bool enq(const T & entry);
     bool deq(T & entry);
@@ -38,7 +49,7 @@ private:
     {
         // Because the counters are unsigned, this is correct even
         // if the counters wrap.
-        return (writeCnt == (CNTR_TYPE)(readCnt + (CNTR_TYPE)size));
+        return (writeCnt == (counter_t)(readCnt + (counter_t)size));
     }
 
     bool empty()
@@ -48,8 +59,8 @@ private:
 
     T buf[size];
 
-    CNTR_TYPE readCnt;  // Number of reads
-    CNTR_TYPE writeCnt; // Number of writes
+    counter_t readCnt;  // Number of reads
+    counter_t writeCnt; // Number of writes
 };
 
 
