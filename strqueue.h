@@ -8,13 +8,10 @@
  * (at least by gcc).  This file has an implicit dependency on the queue size being a power
  * of two, but unfortunately does not enforce that.
  *
- * Note that we assume the increment operations on writeCnt and readCnt are atomic.
- * Choose counter_t accordingly, i.e. in n-bit processors, counter_t should not be larger than n bits.
  *
  * Threading:
- *  Application can safely enqueue in one task and dequeue in another.
- *  Application should ensure that enq is not call concurrently;
- *  neither should deq.
+ * TODO: Can we safely call enq in one task and deq in another?  writeCnt is modified only
+ * in enq, and readCnt is modified only in deq.
  *
  * xxx Could we produce a compile-time warning or failure if size is not a power of two
  * (which causes this implementation to be defective)?
@@ -42,14 +39,20 @@ public:
     queue() : readCnt(0), writeCnt(0) {}
     bool enq(const T & entry);
     bool deq(T & entry);
+    counter_t numItems()
+    {
+        // Because the counters are unsigned, this is correct even
+        // if counters have wrapped.
+        return writeCnt - readCnt;
+    }
     
 private:
 
     bool full()
     {
         // Because the counters are unsigned, this is correct even
-        // if the counters wrap.
-        return (writeCnt == (counter_t)(readCnt + (counter_t)size));
+        // if counters have wrapped.
+        return writeCnt == readCnt + (counter_t)size;
     }
 
     bool empty()

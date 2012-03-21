@@ -56,10 +56,12 @@ TEST(write1, strqueue)
 
     int in = 43;
     q.enq(in);
+    LONGS_EQUAL(1, q.numItems());
 
     int out;
     q.deq(out);
     CHECK(out == 43);
+    LONGS_EQUAL(0, q.numItems());
 }
 
 // Write 2 entries, then read them
@@ -71,6 +73,7 @@ TEST(write2, strqueue)
     q.enq(in);
     in = 2;
     q.enq(in);
+    LONGS_EQUAL(2, q.numItems());
 
     int out;
     q.deq(out);
@@ -117,6 +120,7 @@ TEST(writeFull, strqueue)
             break;
         }
     }
+    LONGS_EQUAL(8, q.numItems());
 
     int out;
 
@@ -125,6 +129,7 @@ TEST(writeFull, strqueue)
         CHECK(out == 5 + nOut);
     }
 
+    LONGS_EQUAL(0, q.numItems());
     CHECK(nOut == nIn);
     CHECK(nIn == 8);
 }
@@ -141,10 +146,11 @@ TEST(chase, strqueue)
     {
         int in = n;
         q.enq(in);
+        LONGS_EQUAL(1, q.numItems());
 
         int out;
         q.deq(out);
-
+        LONGS_EQUAL(0, q.numItems());
         CHECK(out == in);
     }
 }
@@ -164,7 +170,7 @@ TEST(wrap, strqueue)
     int in;
 
     // Write to queue, then read, leaving it empty each time
-    // Do this until uint8_t will soon wrap.
+    // Do this until uint8_t is about to wrap.
     for (n = 0; n <= 256 - qSize; n++)
     {
         in = n;
