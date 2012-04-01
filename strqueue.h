@@ -9,9 +9,24 @@
  * of two, but unfortunately does not enforce that.
  *
  *
- * Threading:
- * TODO: Can we safely call enq in one task and deq in another?  writeCnt is modified only
- * in enq, and readCnt is modified only in deq.
+ * Thread safety:
+ *  - It's safe to call enq in one task and deq in another. 
+ *     o writeCnt is modified only in enq, and readCnt is modified only in deq.
+ *     o enq updates writeCnt AFTER writing to the queue.  This ensures that when
+ *       enq is writing to an empty queue, deq's empty() returns true until the write is
+ *       complete, avoiding deq reading partially-written data.
+ *     o Similarly, deq updates readCnt AFTER reading from the queue.  This ensures that when
+ *       deq is reading from a full queue, enq's full() returns true until the read is
+ *       complete, avoiding enq overwriting data that's still being read.
+ *  - It's not safe to enqueue to one queue in several tasks, or dequeue one queue in
+ *    several tasks -- if you need to do this, add the necessary protection.
+ *    
+ *  - We assume that writing to readCnt and writeCnt is atomic.
+ *    If writing is not atomic, an context switch could happen when they're
+ *    partly written, and thus meaningless.  This means that the type used for readCnt
+ *    and writeCnt should not be larger than the register size of the processor, e.g. on
+ *    an 8-bit processor, don't use 16- or 32-bit integers.  If you need larger readCnt/writeCnt,
+ *    modify the code to disable interrupts while writing readCnt and writeCnt.
  *
  * xxx Could we produce a compile-time warning or failure if size is not a power of two
  * (which causes this implementation to be defective)?
@@ -50,14 +65,12 @@ private:
 
     bool full()
     {
-        // Because the counters are unsigned, this is correct even
-        // if counters have wrapped.
-        return writeCnt == readCnt + (counter_t)size;
+        return numItems() == size;
     }
 
     bool empty()
     {
-        return (readCnt == writeCnt);
+        return numItems() == 0;
     }
 
     T buf[size];

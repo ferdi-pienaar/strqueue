@@ -160,7 +160,7 @@ TEST(chase, strqueue)
 // This test fails if qSize is not a power of 2, and counter_t is uint8_t (with 256
 // being the number of writes to be done until the write index wraps).
 // It demonstrates why qSize must be a power of 2 for this to work.
-// Also qSize must be less than the maximum value that can be held in counter_t.
+// Also qSize must be <= the maximum value that can be held in counter_t.
 TEST(wrap, strqueue)
 {
     static const unsigned qSize = 8;
