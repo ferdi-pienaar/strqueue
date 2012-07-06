@@ -27,7 +27,7 @@
  It's smaller than the 15 and 17 cases, but larger than 16 case.
 
  Comparing the assembler generated for the 15 and 16 cases, we can see
- the 16 case is smaller because is has this:	
+ the 16 case is smaller because it has this for the "rem size" operation:	
 
  andl	$15, %edx
 

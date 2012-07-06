@@ -1,4 +1,6 @@
-CXXFLAGS = -Wall -g -I .. -I ../../CppUnitLite #  -DDEBUG_PRINT  -save-temps
+CXXFLAGS = -Wall -g -I .. -I ../../CppUnitLite
+#CXXFLAGS += -DDEBUG_PRINT
+#CXXFLAGS += -save-temps
 VPATH = ../../CppUnitLite
 
 OBJS = strqueue_test.o

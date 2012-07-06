@@ -29,7 +29,21 @@
  *    modify the code to disable interrupts while writing readCnt and writeCnt.
  *
  * xxx Could we produce a compile-time warning or failure if size is not a power of two
- * (which causes this implementation to be defective)?
+ * (which causes this implementation to be defective)?  Same for if the counter type
+ * is not big enough to count up to size.
+ *
+ * Difference in executable size on laptop (presumably a 32-bit Intel processor) when
+ * switching between counter_t uin8_t and uint32_t:
+ * For uint8_t:
+ *    text    data     bss     dec     hex filename
+ *   18568    4848     408   23824    5d10 strqueue_test.exe
+ * For uint32_t:
+ *    text    data     bss     dec     hex filename
+ *   18552    4848     408   23808    5d00 strqueue_test.exe
+ *
+ * Conclusion: the executable is smaller when using the processor's natural integer size.
+ * For the uint8_t version, various instructions are byte-instructions, but
+ * there are also several additional instructions.
  *
  */
 
@@ -40,15 +54,18 @@
 
 // An advantage of the streams model is that it doesn't waste
 // one buffer entry to distinguish between "full" and "empty".
-// If size is a power of two, and known at compile-time, the compiler
+// @param T - the type of the objects held in the queue, often a pointer
+// @param size - the maximum number of elements the queue can hold
+// Size is known at compile-time, so if it is a power of two, the compiler
 // should be able to make efficient implementations of the modulus operation
 // used in enq() and deq().
 template <class T, unsigned size = 8>
 class queue
 {
 public:
-    // The type must be big enough to count up to the maximum number of elements in the queue,
-    // given by the size parameter of this template class.
+    // This unsigned type must be big enough to count up to the maximum number of elements in the queue,
+    // given by the size parameter of this template class.  The most efficient (fastest)
+    // implementation probably results when this is the natural word size of the processor.
     typedef uint8_t counter_t;
 
     queue() : readCnt(0), writeCnt(0) {}
