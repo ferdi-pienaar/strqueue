@@ -36,21 +36,34 @@
  */
 #include <iostream>
 #include "strqueue.h"
-#include "TestHarness.h"
+#include "CppUTest/TestHarness.h"
+#include "CppUTest/CommandLineTestRunner.h"
 
 using namespace std;
 
 
-int main()
+int main(int argc, char** argv)
 {
-	TestResult tr;
-	TestRegistry::runAllTests(tr);
-	return 0;
+    return RUN_ALL_TESTS(argc, argv);
 }
+
+TEST_GROUP(strqueue)
+{
+    //Define data accessible to test group members here.
+    void setup()
+    {
+        //initialization steps are executed before each TEST
+    }
+    
+    void teardown()
+    {
+        //clean up steps are executed after each TEST
+    }
+};
 
 
 // Write one entry and read it
-TEST(write1, strqueue)
+TEST(strqueue, write1)
 {
     queue<int> q;
 
@@ -65,7 +78,7 @@ TEST(write1, strqueue)
 }
 
 // Write 2 entries, then read them
-TEST(write2, strqueue)
+TEST(strqueue, write2)
 {
     queue<int> q;
 
@@ -85,7 +98,7 @@ TEST(write2, strqueue)
 
 
 // Write an entry and read, then another
-TEST(write1and1, strqueue)
+TEST(strqueue, write1and1)
 {
     queue<int> q;
 
@@ -106,7 +119,7 @@ TEST(write1and1, strqueue)
 
 // Write until full, then read until empty.
 // As many elements are read as were written.
-TEST(writeFull, strqueue)
+TEST(strqueue, writeFull)
 {
     queue<int> q;
     int in;
@@ -126,7 +139,7 @@ TEST(writeFull, strqueue)
 
     for (nOut = 0; q.deq(out) == true; nOut++)
     {
-        CHECK(out == 5 + nOut);
+        LONGS_EQUAL(5 + nOut, out);
     }
 
     LONGS_EQUAL(0, q.numItems());
@@ -136,7 +149,7 @@ TEST(writeFull, strqueue)
 
 
 // Write and read for a few cycles
-TEST(chase, strqueue)
+TEST(strqueue, chase)
 {
     static const unsigned qSize = 8;
     queue<int, qSize> q;
@@ -161,7 +174,7 @@ TEST(chase, strqueue)
 // being the number of writes to be done until the write index wraps).
 // It demonstrates why qSize must be a power of 2 for this to work.
 // Also qSize must be <= the maximum value that can be held in counter_t.
-TEST(wrap, strqueue)
+TEST(strqueue, wrap)
 {
     static const unsigned qSize = 8;
     queue<int, qSize> q;

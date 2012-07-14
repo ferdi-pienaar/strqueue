@@ -1,7 +1,7 @@
-CXXFLAGS = -Wall -g -I .. -I ../../CppUnitLite
+CXXFLAGS = -Wall -g -I .. -I ../../CppUTest/include
 #CXXFLAGS += -DDEBUG_PRINT
 #CXXFLAGS += -save-temps
-VPATH = ../../CppUnitLite
+VPATH = ../../CppUTest/lib
 
 OBJS = strqueue_test.o
 
@@ -10,7 +10,7 @@ testTag: strqueue_test
 	./strqueue_test
 	touch testTag
 	
-strqueue_test: $(OBJS) -lCppUnitLite
+strqueue_test: $(OBJS) -lCppUTest
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 strqueue_test.o: strqueue_test.cpp ../strqueue.h
