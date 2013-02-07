@@ -1,5 +1,4 @@
 /* 
- * Try the following:
  * Use stream queue concept http://fgiesen.wordpress.com/2010/12/14/ring-buffers-and-queues/
  * Use C++ templates for the elem type and also the queue size.  Having queue size as
  * a template parameter should allow us the efficiencies of power-of-two sizes, without
@@ -44,6 +43,11 @@
  * Conclusion: the executable is smaller when using the processor's natural integer size.
  * For the uint8_t version, various instructions are byte-instructions, but
  * there are also several additional instructions.
+ * "See MIPS Run", 2nd Edition, confirms that for MIPS, the compiler
+ * generates additional instructions to cause smaller-than-word sized
+ * variables to "overflow" -- this confirms that for MIPS, at least,
+ * the most efficient implementation uses uint32_t (or maybe
+ * uint64_t for MIPS 64).
  *
  */
 

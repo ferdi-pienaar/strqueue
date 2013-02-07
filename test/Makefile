@@ -1,7 +1,8 @@
-CXXFLAGS = -Wall -g -I .. -I ../../CppUTest/include
+CPPUTEST_DIR = ../../CppUTest3.3
+CXXFLAGS = -Wall -g -I .. -I $(CPPUTEST_DIR)/include
 #CXXFLAGS += -DDEBUG_PRINT
 #CXXFLAGS += -save-temps
-VPATH = ../../CppUTest/lib
+VPATH = $(CPPUTEST_DIR)/lib
 
 OBJS = strqueue_test.o
 
