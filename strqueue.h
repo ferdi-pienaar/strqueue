@@ -63,7 +63,7 @@
 // Size is known at compile-time, so if it is a power of two, the compiler
 // should be able to make efficient implementations of the modulus operation
 // used in enq() and deq().
-template <class T, unsigned size = 8>
+template <typename T, unsigned size = 8>
 class queue
 {
 public:
