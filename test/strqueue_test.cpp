@@ -5,7 +5,7 @@
  When size is only 8:
    text    data     bss     dec     hex filename
   14532    4848     408   19788    4d4c strqueue_test.exe
-  
+
  When a size is modified to 15 (but the rest are still 8):
   14836    4848     408   20092    4e7c strqueue_test.exe
 
@@ -27,7 +27,7 @@
  It's smaller than the 15 and 17 cases, but larger than 16 case.
 
  Comparing the assembler generated for the 15 and 16 cases, we can see
- the 16 case is smaller because it has this for the "rem size" operation:	
+ the 16 case is smaller because it has this for the "rem size" operation:
 
  andl	$15, %edx
 
@@ -36,49 +36,31 @@
  */
 #include <iostream>
 #include "strqueue.h"
-#include "CppUTest/TestHarness.h"
-#include "CppUTest/CommandLineTestRunner.h"
+#include "gtest/gtest.h"
 
 using namespace std;
 
-
-int main(int argc, char** argv)
+class strqueue : public testing::Test
 {
-    return RUN_ALL_TESTS(argc, argv);
-}
-
-TEST_GROUP(strqueue)
-{
-    //Define data accessible to test group members here.
-    void setup()
-    {
-        //initialization steps are executed before each TEST
-    }
-    
-    void teardown()
-    {
-        //clean up steps are executed after each TEST
-    }
 };
 
-
 // Write one entry and read it
-TEST(strqueue, write1)
+TEST_F(strqueue, write1)
 {
     queue<int> q;
 
     int in = 43;
     q.enq(in);
-    LONGS_EQUAL(1, q.numItems());
+    EXPECT_EQ(1, q.numItems());
 
     int out;
     q.deq(out);
-    CHECK(out == 43);
-    LONGS_EQUAL(0, q.numItems());
+    EXPECT_TRUE(out == 43);
+    EXPECT_EQ(0, q.numItems());
 }
 
 // Write 2 entries, then read them
-TEST(strqueue, write2)
+TEST_F(strqueue, write2)
 {
     queue<int> q;
 
@@ -86,19 +68,19 @@ TEST(strqueue, write2)
     q.enq(in);
     in = 2;
     q.enq(in);
-    LONGS_EQUAL(2, q.numItems());
+    EXPECT_EQ(2, q.numItems());
 
     int out;
     q.deq(out);
-    CHECK(out == 43);
+    EXPECT_TRUE(out == 43);
 
     q.deq(out);
-    CHECK(out == 2);
+    EXPECT_TRUE(out == 2);
 }
 
 
 // Write an entry and read, then another
-TEST(strqueue, write1and1)
+TEST_F(strqueue, write1and1)
 {
     queue<int> q;
 
@@ -107,19 +89,19 @@ TEST(strqueue, write1and1)
 
     int out;
     q.deq(out);
-    CHECK(out == 43);
+    EXPECT_TRUE(out == 43);
 
     in = 7;
     q.enq(in);
 
     q.deq(out);
-    CHECK(out == 7);
+    EXPECT_TRUE(out == 7);
 }
 
 
 // Write until full, then read until empty.
 // As many elements are read as were written.
-TEST(strqueue, writeFull)
+TEST_F(strqueue, writeFull)
 {
     queue<int> q;
     int in;
@@ -133,23 +115,23 @@ TEST(strqueue, writeFull)
             break;
         }
     }
-    LONGS_EQUAL(8, q.numItems());
+    EXPECT_EQ(8, q.numItems());
 
     int out;
 
     for (nOut = 0; q.deq(out) == true; nOut++)
     {
-        LONGS_EQUAL(5 + nOut, out);
+        EXPECT_EQ(5 + nOut, out);
     }
 
-    LONGS_EQUAL(0, q.numItems());
-    CHECK(nOut == nIn);
-    CHECK(nIn == 8);
+    EXPECT_EQ(0, q.numItems());
+    EXPECT_TRUE(nOut == nIn);
+    EXPECT_TRUE(nIn == 8);
 }
 
 
 // Write and read for a few cycles
-TEST(strqueue, chase)
+TEST_F(strqueue, chase)
 {
     static const unsigned qSize = 8;
     queue<int, qSize> q;
@@ -159,12 +141,12 @@ TEST(strqueue, chase)
     {
         int in = n;
         q.enq(in);
-        LONGS_EQUAL(1, q.numItems());
+        EXPECT_EQ(1, q.numItems());
 
         int out;
         q.deq(out);
-        LONGS_EQUAL(0, q.numItems());
-        CHECK(out == in);
+        EXPECT_EQ(0, q.numItems());
+        EXPECT_TRUE(out == in);
     }
 }
 
@@ -174,7 +156,7 @@ TEST(strqueue, chase)
 // being the number of writes to be done until the write index wraps).
 // It demonstrates why qSize must be a power of 2 for this to work.
 // Also qSize must be <= the maximum value that can be held in counter_t.
-TEST(strqueue, wrap)
+TEST_F(strqueue, wrap)
 {
     static const unsigned qSize = 8;
     queue<int, qSize> q;
@@ -190,7 +172,7 @@ TEST(strqueue, wrap)
         q.enq(in);
 
         q.deq(out);
-        CHECK(out == in);
+        EXPECT_TRUE(out == in);
     }
 
     // Fill the queue
@@ -204,7 +186,7 @@ TEST(strqueue, wrap)
     // Read current contents
     unsigned nRead;
     int expected = 256 - qSize + 1; // the last write that's still in the queue
-    
+
     for (nRead = 0; nRead<qSize; nRead++)
     {
         if (!q.deq(out))
@@ -214,12 +196,12 @@ TEST(strqueue, wrap)
 
         cout << "read from queue: " << out << endl;
 
-        CHECK(out == expected);
+        EXPECT_TRUE(out == expected);
         expected += 1;
     }
 
     cout << "nRead: " << nRead << "====================================================" << endl;
 
-    CHECK(nRead == qSize);
+    EXPECT_TRUE(nRead == qSize);
 }
 
