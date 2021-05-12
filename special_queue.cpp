@@ -136,7 +136,7 @@ static void use_derived_class()
 static void use_named_type()
 {
     intQueueSmall sq;
-    
+
     sq.enq(999);
     cout << __func__ << " numItems=" << (int)sq.numItems() << endl;
 
