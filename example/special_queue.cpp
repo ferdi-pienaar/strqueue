@@ -16,7 +16,7 @@
 using namespace std;
 // A template specialization that binds both parameters: queue of 4 ints.
 // The following line is required by gcc -- else it gives the following compiler error:
-// "error: an explicit specialization must be preceded by ‘template <>’"
+// "error: an explicit specialization must be preceded by 'template <>'"
 template <>
 class queue<int, 4>
 {
@@ -24,11 +24,13 @@ public:
     bool enq(const int & entry)
     {
         cout << __func__ << " enq" << endl;
+        return true;
     }
 
     int f()
     {
         cout << __func__ << " f" << endl;
+        return 0;
     }
 
     int numItems()
@@ -99,12 +101,14 @@ static void use_explicit_specialization()
     int i;
     //q.deq(i); // this method was not implemented in the above explicit specialization, so compilation fails.
 
+#if 0 // This violates compile-time check size is power of 2, so compile error.
     queue<int, 5> q2;
     int i2;
     q2.enq(45);
     cout << __func__ << " numItems=" << (int)q2.numItems() << endl;
     q2.deq(i2);
     cout << __func__ << " out=" << i2 << endl;
+#endif
 }
 
 // Example use of derived template class
