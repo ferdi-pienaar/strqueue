@@ -1,5 +1,5 @@
 /*
- * Tests using CppUnitLite unit test framework.
+ * Tests using google test unit test framework.
  *
  *
  When size is only 8:

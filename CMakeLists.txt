@@ -22,20 +22,20 @@ add_library(strqueue INTERFACE)
 target_include_directories(strqueue
     INTERFACE
        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-       $<INSTALL_INTERFACE:include>
+       $<INSTALL_INTERFACE:include/strqueue>
 )
 
-#install(DIRECTORY include/ DESTINATION include)
-# Create export set strqueueTargets containing strqueue
-#install(TARGETS strqueue EXPORT strqueueTargets)
-# Write strqueueTargets to disk
-#install(EXPORT strqueueTargets
-#        FILE strqueue.cmake
-#        NAMESPACE strqueue::
-#        DESTINATION lib/cmake/strqueue)
-#
-#install(FILES cmake/strqueueConfig.cmake
-#        DESTINATION lib/cmake/strqueue)
+install(DIRECTORY include/ DESTINATION include/strqueue)
+# Install the library and create package 'export set' descriptor strqueueTargets.
+install(TARGETS strqueue EXPORT strqueueTargets)
+# Write package 'export set' to a file. It allows clients to import the package.
+install(EXPORT strqueueTargets
+        FILE strqueueTargets.cmake
+        NAMESPACE strqueue::
+        DESTINATION lib/cmake/strqueue)
+# Write package configuration file; it allows clients to find the package descriptor file.
+install(FILES cmake/strqueueConfig.cmake
+        DESTINATION lib/cmake/strqueue)
 
 add_subdirectory(test)
 add_subdirectory(example)
