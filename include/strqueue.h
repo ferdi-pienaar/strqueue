@@ -6,6 +6,9 @@
 #include <stdint.h>  // uint8_t, etc
 #include <math.h> // pow
 
+namespace StreamQueue
+{
+
 // Used in compile-time assert.
 constexpr bool is_powerof2(unsigned v)
 {
@@ -86,4 +89,6 @@ bool queue<T, size>::deq(T & entry)
     entry = buf[readCnt % size];
     readCnt++;
     return true;
+}
+
 }

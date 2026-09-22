@@ -14,11 +14,12 @@
 #include <iostream>
 
 using namespace std;
+
 // A template specialization that binds both parameters: queue of 4 ints.
 // The following line is required by gcc -- else it gives the following compiler error:
 // "error: an explicit specialization must be preceded by 'template <>'"
 template <>
-class queue<int, 4>
+class StreamQueue::queue<int, 4>
 {
 public:
     bool enq(const int & entry)
@@ -44,7 +45,7 @@ public:
 // I'm not very clear on why I have to use 'this' to refer to base
 // class members, but gcc apparently requires it.
 template <typename T, unsigned size>
-class peekQueue : public queue <T, size>
+class peekQueue : public StreamQueue::queue <T, size>
 {
 public:
     peekQueue() {}
@@ -65,7 +66,7 @@ public:
 
 // A queue of ints.
 // A template specialization that binds only one of the parameters.
-class intQueue : public queue<int>
+class intQueue : public StreamQueue::queue<int>
 {
     // seems we don't need anything here.
 };
@@ -73,7 +74,7 @@ class intQueue : public queue<int>
 // Another way to name a queue of ints: there's no need to derive
 // a class from the template just to create the new name;
 // just use typedef to assign a name.
-typedef queue<int, 2> intQueueSmall;
+typedef StreamQueue::queue<int, 2> intQueueSmall;
 
 static void use_explicit_specialization();
 static void use_derived_template();
@@ -93,7 +94,7 @@ int main(int argc, char** argv)
 // Example use of explicit specialization
 static void use_explicit_specialization()
 {
-    queue<int, 4> q;
+    StreamQueue::queue<int, 4> q;
     q.enq(1);
     int n = q.numItems();
     cout << __func__ << " numItems=" << n << endl;

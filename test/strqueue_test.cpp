@@ -39,6 +39,7 @@
 #include "gtest/gtest.h"
 
 using namespace std;
+using namespace StreamQueue;
 
 class strqueue : public testing::Test
 {
